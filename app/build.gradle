@@ -37,3 +37,6 @@ dependencies {
 
     compile 'com.google.apis:google-api-services-vision:v1-rev2-1.21.0'
 }
+
+
+apply plugin: 'com.google.gms.google-services'
