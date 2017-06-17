@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
@@ -35,14 +37,41 @@ import com.google.api.services.vision.v1.model.BatchAnnotateImagesResponse;
 import com.google.api.services.vision.v1.model.EntityAnnotation;
 import com.google.api.services.vision.v1.model.Feature;
 import com.google.api.services.vision.v1.model.Image;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class MainActivity extends AppCompatActivity {
+
 
     private static final String CLOUD_VISION_API_KEY = "AIzaSyCrgi8G-L6so9OBJocVk1D153_BYODS-lU";
     public static final String FILE_NAME = "temp.jpg";
@@ -57,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView mImageDetails;
     private ImageView mMainImage;
+    private FirebaseStorage fb;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        fb = FirebaseStorage.getInstance();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,6 +144,8 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivityForResult(intent, CAMERA_IMAGE_REQUEST);
+            getNutritionFromItem("apple");
+
         }
     }
 
@@ -161,6 +194,26 @@ public class MainActivity extends AppCompatActivity {
                                 1200);
 
                 callCloudVision(bitmap);
+                final StorageReference r = fb.getReference();
+                long random = Calendar.getInstance().getTime().getTime();
+                StorageReference childRef = r.child(random + ".jpg");
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] data = baos.toByteArray();
+
+                UploadTask uploadTask = childRef.putBytes(data);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    }
+                });
                 mMainImage.setImageBitmap(bitmap);
 
             } catch (IOException e) {
@@ -296,6 +349,40 @@ public class MainActivity extends AppCompatActivity {
             message += "nothing";
         }
 
+
         return message;
+
     }
+
+    Map<String, Float> nutritionFacts = new HashMap<>();
+    private void getNutritionFromItem(String s){
+        Retrofit retro = new Retrofit.Builder().baseUrl("https://trackapi.nutritionix.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        NutritionFactService n = retro.create(NutritionFactService.class);
+        Call<ResponseBody> c = n.getNutrition(new Food(s));
+        c.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    Log.d(TAG, "RetroFit2.0 :RetroGetLogin: " + response.body().string());
+                    JSONObject Jobject = new JSONObject(response.body().string());
+                    JSONArray Jarray = Jobject.getJSONArray("foods");
+
+
+                } catch (Exception e){
+                    Log.d(TAG, "RetroFit2.0 :RetroGetLogin: " + response.code());
+
+                    Log.e("d", e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
+    }
+
+
 }
