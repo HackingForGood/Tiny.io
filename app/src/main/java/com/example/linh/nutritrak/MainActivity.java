@@ -273,7 +273,6 @@ public class MainActivity extends AppCompatActivity {
                         Uri downloadUrl = taskSnapshot.getDownloadUrl();
                     }
                 });
-                mMainImage.setImageBitmap(bitmap);
                 tab1.setImage(bitmap);
 
             } catch (IOException e) {
@@ -430,7 +429,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "RetroFit2.0 :RetroGetLogin: " + response.body().string());
                     JSONObject Jobject = new JSONObject(response.body().string());
                     JSONArray Jarray = Jobject.getJSONArray("foods");
-
+                    //NutritionFact f = new NutritionFact();
 
                 } catch (Exception e){
                     Log.d(TAG, "RetroFit2.0 :RetroGetLogin: " + response.code());
