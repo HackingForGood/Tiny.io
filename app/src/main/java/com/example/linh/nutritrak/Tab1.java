@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 public class Tab1 extends Fragment {
 
-    private TextView tview;
+    private TextView tview,tviewfat,tviewcho,tviewsod,tviewpot,tviewcar,tviewpro;
     private ImageView iview;
     @Nullable
     @Override
@@ -28,6 +28,12 @@ public class Tab1 extends Fragment {
     public void onViewCreated(View view, Bundle b){
         this.tview = (TextView) view.findViewById(R.id.image_details);
         this.iview = (ImageView) view.findViewById(R.id.main_image);
+        this.tviewfat = (TextView) view.findViewById(R.id.tab2fatdata);
+        this.tviewcho = (TextView) view.findViewById(R.id.tab2chodata);
+        this.tviewsod = (TextView) view.findViewById(R.id.tab2soddata);
+        this.tviewpot = (TextView) view.findViewById(R.id.tab2potdata);
+        this.tviewcar = (TextView) view.findViewById(R.id.tab2cardata);
+        this.tviewpro = (TextView) view.findViewById(R.id.tab2prodata);
 
     }
 
@@ -45,5 +51,6 @@ public class Tab1 extends Fragment {
     public void setImage(Bitmap bm){
         iview.setImageBitmap(bm);
     }
+
 
 }

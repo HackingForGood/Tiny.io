@@ -317,6 +317,7 @@ public class MainActivity extends AppCompatActivity {
 
             protected void onPostExecute(String result) {
                 tab1.setText(result);
+                findResultInDictionary();
             }
         }.execute();
     }
@@ -359,15 +360,22 @@ public class MainActivity extends AppCompatActivity {
         return message;
     }
 
-    public String findResultInDictionary(){
+    public void findResultInDictionary(){
+        String result;
+        result = "No Result";
         for(int i = 0;i<foodList.size();i++){
             for(int j=0;j<dictionary.size();j++){
                 if (foodList.get(i)==dictionary.get(j)){
-                    return dictionary.get(j);
+                    result =  dictionary.get(j);
                 }
             }
         }
-        return "No result";
+        NutritionFact apple = new NutritionFact("Apple",0.3,0,0.002,0.195,25,95);
+
+//        tab3.setText(result);
+
+        tab2.showResult(apple);
+
     }
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
