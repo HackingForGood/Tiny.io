@@ -203,7 +203,6 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivityForResult(intent, CAMERA_IMAGE_REQUEST);
-            getNutritionFromItem("apple");
 
         }
     }
@@ -371,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
 
             protected void onPostExecute(String result) {
                 tab1.setText(result);
-                findResultInDictionary();
+                getNutritionFromItem("apple");
             }
         }.execute();
     }
@@ -427,10 +426,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
-                    Log.d(TAG, "RetroFit2.0 :RetroGetLogin: " + response.body().string());
+                    Log.d(TAG, "RetroFit2.0 :RetroGetLogin: " + "po");
                     JSONObject Jobject = new JSONObject(response.body().string());
                     JSONArray Jarray = Jobject.getJSONArray("foods");
-                    JSONObject food_item = Jarray.getJSONObject(0));
+                    JSONObject food_item = Jarray.getJSONObject(0);
 
                     NutritionFact f = new NutritionFact(food_item.getString("food_name"),
                             (float) food_item.getDouble("nf_total_fat"),
@@ -439,7 +438,7 @@ public class MainActivity extends AppCompatActivity {
                             (float) food_item.getDouble("nf_potassium"),
                             (float) food_item.getDouble("nf_total_carbohydrate"),
                             (float) food_item.getDouble("nf_protein"));
-
+                    tab2.showResult(f);
                 } catch (Exception e){
                     Log.d(TAG, "RetroFit2.0 :RetroGetLogin: " + response.code());
 
