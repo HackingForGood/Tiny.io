@@ -19,21 +19,21 @@ public class NutritionFact {
     }
 
     public String getFat(){
-        return String.valueOf(this.fat);
+        return String.format("%3.2f",this.fat);
     }
     public String getCho(){
-        return String.valueOf(this.cho);
+        return String.format("%3.2f",this.cho);
     }
     public String getSod(){
-        return String.valueOf(this.sod);
+        return String.format("%3.2f",this.sod);
     }
     public String getPot(){
-        return String.valueOf(this.pot);
+        return String.format("%3.2f",this.pot);
     }
     public String getCar(){
-        return String.valueOf(this.car);
+        return String.format("%3.2f",this.car);
     }
     public String getPro(){
-        return String.valueOf(this.pro);
+        return String.format("%3.2f",this.pro);
     }
 }
