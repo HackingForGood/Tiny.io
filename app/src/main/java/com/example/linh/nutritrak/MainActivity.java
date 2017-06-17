@@ -429,7 +429,15 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "RetroFit2.0 :RetroGetLogin: " + response.body().string());
                     JSONObject Jobject = new JSONObject(response.body().string());
                     JSONArray Jarray = Jobject.getJSONArray("foods");
-                    //NutritionFact f = new NutritionFact();
+                    JSONObject food_item = Jarray.getJSONObject(0));
+
+                    NutritionFact f = new NutritionFact(food_item.getString("food_name"),
+                            (float) food_item.getDouble("nf_total_fat"),
+                            (float) food_item.getDouble("nf_cholesterol"),
+                            (float) food_item.getDouble("nf_sodium"),
+                            (float) food_item.getDouble("nf_potassium"),
+                            (float) food_item.getDouble("nf_total_carbohydrate"),
+                            (float) food_item.getDouble("nf_protein"));
 
                 } catch (Exception e){
                     Log.d(TAG, "RetroFit2.0 :RetroGetLogin: " + response.code());
